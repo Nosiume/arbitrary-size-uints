@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.31.5)
+cmake_minimum_required(VERSION 3.15)
 
 project(bigint VERSION 1.0 LANGUAGES C DESCRIPTION "Basic big integer operation library")
 

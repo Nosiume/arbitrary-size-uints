@@ -16,5 +16,7 @@ bigint_t* bg_add(bigint_t* lvalue, bigint_t* rvalue);
 bigint_t* bg_sub(bigint_t* lvalue, bigint_t* rvalue);
 bigint_t* bg_mul(bigint_t* lvalue, bigint_t* rvalue);
 bigint_t* bg_div(bigint_t* lvalue, bigint_t* rvalue);
+
 bigint_t* bg_lshift(bigint_t* value, size_t offset);
+bigint_t* bg_rshift(bigint_t* value, size_t offset);
 
