@@ -1,11 +1,15 @@
 #pragma once
 
 #include <stdlib.h>
+#include <stdio.h>
 
 typedef struct {
 	unsigned int* blocks;
 	size_t block_count;
 } bigint_t;
+
+// IO functions
+void bg_printhex(bigint_t* value);
 
 bigint_t* zero_nbits(unsigned int bits);
 bigint_t* uint_to_bg(unsigned int value);
@@ -19,4 +23,4 @@ bigint_t* bg_div(bigint_t* lvalue, bigint_t* rvalue);
 
 bigint_t* bg_lshift(bigint_t* value, size_t offset);
 bigint_t* bg_rshift(bigint_t* value, size_t offset);
-
+void invert_bits(bigint_t* value);

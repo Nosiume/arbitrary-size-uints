@@ -6,6 +6,16 @@
 #define BG_MIN(a,b) (((a)->block_count < (b)->block_count) ? (b):(a))
 #define BG_MAX(a,b) (((a)->block_count < (b)->block_count) ? (a):(b))
 
+// IO Functions
+
+void bg_printhex(bigint_t* value) {
+    printf("0x");
+	for(int i = value->block_count - 1 ; i >= 0 ; i--) {
+		printf("%08x", value->blocks[i]);
+	}
+	putchar(0xa);
+}
+
 //TODO: optimize that shit cuz this is cringe
 
 bigint_t* zero_nbits(unsigned int bits) {
@@ -74,16 +84,25 @@ bigint_t* bg_add(bigint_t* lvalue, bigint_t* rvalue) {
 }
 
 
-bigint_t* bg_sub(bigint_t* lvalue, bigint_t* rvalue) {
-    bigint_t* substractand = BG_MAX(lvalue, rvalue);
-    bigint_t* substracted = substractand == lvalue ? rvalue : lvalue;
-
+bigint_t* bg_sub(bigint_t* subtrahend, bigint_t* minuhend) {
+	//TODO: implement size check to avoid negative numbers
     bigint_t* res = malloc(sizeof(bigint_t));
-    res->block_count = substractand->block_count;
+    res->block_count = subtrahend->block_count;
     res->blocks = calloc(res->block_count, sizeof(unsigned int));
 
     unsigned char carry = 0;
-    //TODO: implement substraction
+	for(size_t i = 0 ; i < subtrahend->block_count ; i++) {
+		for(size_t bi = 0 ; bi < 32 ; bi++) {
+			unsigned char lbit = (subtrahend->blocks[i] & (1 << bi)) > 0;
+			unsigned char rbit = (i < minuhend->block_count) ? ((minuhend->blocks[i] & (1 << bi)) > 0) : 0;
+			
+			unsigned char result = lbit ^ result ^ carry;
+			carry = lbit < rbit;	
+			res->blocks[i] |= result << bi;
+		}
+	}
+
+	return res;
 }
 
 
@@ -155,4 +174,10 @@ bigint_t* bg_rshift(bigint_t* value, size_t offset) {
     }
 
     return res;
+}
+
+void invert_bits(bigint_t* value) {
+	for(size_t i = 0 ; i < value->block_count ; i++) {
+		value->blocks[i] = ~value->blocks[i];
+	}
 }
