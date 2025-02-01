@@ -84,21 +84,37 @@ bigint_t* bg_add(bigint_t* lvalue, bigint_t* rvalue) {
 }
 
 
-bigint_t* bg_sub(bigint_t* subtrahend, bigint_t* minuhend) {
+bigint_t* bg_sub(bigint_t* subtrahend, bigint_t* minuend) {
 	//TODO: implement size check to avoid negative numbers
     bigint_t* res = malloc(sizeof(bigint_t));
     res->block_count = subtrahend->block_count;
     res->blocks = calloc(res->block_count, sizeof(unsigned int));
 
     unsigned char carry = 0;
-	for(size_t i = 0 ; i < subtrahend->block_count ; i++) {
+	for(size_t i = 0 ; i < res->block_count ; i++) {
 		for(size_t bi = 0 ; bi < 32 ; bi++) {
 			unsigned char lbit = (subtrahend->blocks[i] & (1 << bi)) > 0;
-			unsigned char rbit = (i < minuhend->block_count) ? ((minuhend->blocks[i] & (1 << bi)) > 0) : 0;
-			
-			unsigned char result = lbit ^ result ^ carry;
-			carry = lbit < rbit;	
-			res->blocks[i] |= result << bi;
+			unsigned char rbit = (i < minuend->block_count) ? ((minuend->blocks[i] & (1 << bi)) > 0) : 0;
+		
+            /* Truth table for binary level subtraction
+             * L | R | C | r | c 
+             * 0 | 0 | 0 | 0 | 0 
+             * 1 | 0 | 0 | 1 | 0
+             * 1 | 1 | 0 | 0 | 0
+             * 0 | 1 | 0 | 1 | 1
+             * 0 | 0 | 1 | 1 | 1 
+             * 1 | 0 | 1 | 0 | 0
+             * 1 | 1 | 1 | 1 | 1
+             * 0 | 1 | 1 | 0 | 1
+             * 
+             * With L and R being the left and right operand's bit
+             * C holding the carry bit of previous operations
+             * , r and c being the result and carry out of our bitwise sub
+             */
+
+            // this is what i came up with to make the aforementionned truth table work
+			res->blocks[i] |= (lbit ^ rbit ^ carry) << bi;
+			carry = rbit & ~lbit ^ (carry & ~(lbit ^ rbit)); 
 		}
 	}
 
